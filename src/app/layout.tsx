@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -18,8 +19,10 @@ export default function RootLayout({
     return (
         <html lang="ko" className={`${inter.variable} h-full antialiased`}>
             <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
-                <Header />
-                <main className="flex-1">{children}</main>
+                <NotificationProvider>
+                    <Header />
+                    <main className="flex-1">{children}</main>
+                </NotificationProvider>
             </body>
         </html>
     );

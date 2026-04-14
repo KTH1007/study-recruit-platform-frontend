@@ -1,18 +1,17 @@
 "use client";
 
 import { Suspense, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { setAccessToken } from "@/lib/api/token";
 import { apiClient } from "@/lib/api/client";
 
 function CallbackHandler() {
-    const router = useRouter();
     const searchParams = useSearchParams();
 
     useEffect(() => {
         const code = searchParams.get("code");
         if (!code) {
-            router.replace("/login");
+            window.location.href = "/login";
             return;
         }
 
@@ -22,12 +21,12 @@ function CallbackHandler() {
         })
             .then(({ accessToken }) => {
                 setAccessToken(accessToken);
-                router.replace("/posts");
+                window.location.href = "/posts";
             })
             .catch(() => {
-                router.replace("/login");
+                window.location.href = "/login";
             });
-    }, [searchParams, router]);
+    }, [searchParams]);
 
     return null;
 }
