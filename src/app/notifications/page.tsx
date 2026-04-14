@@ -46,12 +46,17 @@ export default function NotificationsPage() {
             .finally(() => setLoading(false));
     }, [router]);
 
-    const handleMarkAsRead = async (id: string) => {
-        await markAsRead(id);
-        setNotifications((prev) =>
-            prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-        );
-        refreshUnreadCount();
+    const handleClickNotification = async (notification: Notification) => {
+        if (!notification.isRead) {
+            await markAsRead(notification.id);
+            setNotifications((prev) =>
+                prev.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
+            );
+            refreshUnreadCount();
+        }
+        if (notification.targetId) {
+            router.push(`/posts/${notification.targetId}`);
+        }
     };
 
     const handleMarkAllAsRead = async () => {
@@ -94,7 +99,7 @@ export default function NotificationsPage() {
                     {notifications.map((notification) => (
                         <div
                             key={notification.id}
-                            onClick={() => !notification.isRead && handleMarkAsRead(notification.id)}
+                            onClick={() => handleClickNotification(notification)}
                             className={`flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition hover:shadow-sm ${
                                 notification.isRead
                                     ? "border-slate-100 bg-white"
