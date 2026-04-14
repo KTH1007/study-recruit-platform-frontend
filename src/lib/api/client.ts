@@ -42,7 +42,9 @@ export async function apiClient<T>(
     }
 
     const text = await response.text();
-    return text ? JSON.parse(text) : (null as T);
+    if (!text) return null as T;
+    const json = JSON.parse(text);
+    return json.data !== undefined ? json.data : json;
 }
 
 async function reissueToken(): Promise<boolean> {
