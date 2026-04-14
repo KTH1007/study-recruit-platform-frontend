@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { setAccessToken } from "@/lib/api/token";
 
-export default function CallbackPage() {
+function CallbackHandler() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -20,4 +20,12 @@ export default function CallbackPage() {
     }, [searchParams, router]);
 
     return null;
+}
+
+export default function CallbackPage() {
+    return (
+        <Suspense>
+            <CallbackHandler />
+        </Suspense>
+    );
 }
