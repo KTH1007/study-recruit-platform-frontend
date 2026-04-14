@@ -1,10 +1,27 @@
 "use client";
 
+import { setAccessToken } from "@/lib/api/token";
+
 const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI}&response_type=code`;
 
+const TEST_USER_ID = "40740f6f-3595-11f1-8a64-2e631b1fd0f7";
+
 export default function LoginPage() {
+
     const handleKakaoLogin = () => {
         window.location.href = KAKAO_AUTH_URL;
+    };
+
+    const handleTestLogin = async () => {
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${BASE_URL}/api/test/token?userId=${TEST_USER_ID}`);
+        if (!res.ok) {
+            alert("테스트 로그인 실패 (백엔드가 local 프로필로 실행 중인지 확인하세요)");
+            return;
+        }
+        const token = await res.text();
+        setAccessToken(token);
+        window.location.href = "/posts";
     };
 
     return (
@@ -30,6 +47,19 @@ export default function LoginPage() {
                             />
                         </svg>
                         카카오로 시작하기
+                    </button>
+
+                    <div className="mt-4 flex items-center gap-3">
+                        <div className="h-px flex-1 bg-slate-100" />
+                        <span className="text-xs text-slate-400">또는</span>
+                        <div className="h-px flex-1 bg-slate-100" />
+                    </div>
+
+                    <button
+                        onClick={handleTestLogin}
+                        className="mt-4 w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100"
+                    >
+                        테스트 계정으로 로그인 (로컬 전용)
                     </button>
                 </div>
             </div>
