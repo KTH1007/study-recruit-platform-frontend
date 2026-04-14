@@ -5,10 +5,12 @@ import { useParams, useRouter } from "next/navigation";
 import { getPost, deletePost } from "@/lib/api/post";
 import { getApplies, createApply, cancelApply, approveApply, rejectApply } from "@/lib/api/apply";
 import { getComments, createComment, updateComment, deleteComment } from "@/lib/api/comment";
+import { getTeamByPostId } from "@/lib/api/team";
 import { getCurrentUserId } from "@/lib/api/token";
 import { Post, StudyPostStatus } from "@/types/post";
 import { Apply } from "@/types/apply";
 import { Comment } from "@/types/comment";
+import { StudyTeam } from "@/types/team";
 
 const statusLabel: Record<StudyPostStatus, string> = {
     OPEN: "모집 중",
@@ -171,6 +173,7 @@ export default function PostDetailPage() {
     const router = useRouter();
     const [post, setPost] = useState<Post | null>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [team, setTeam] = useState<StudyTeam | null>(null);
     const [applies, setApplies] = useState<Apply[]>([]);
     const [comments, setComments] = useState<Comment[]>([]);
     const [applyMessage, setApplyMessage] = useState("");
@@ -195,6 +198,7 @@ export default function PostDetailPage() {
         setCurrentUserId(getCurrentUserId());
         getPost(id).then(setPost).catch(console.error);
         getComments(id).then((res) => setComments(res.content)).catch(console.error);
+        getTeamByPostId(id).then(setTeam).catch(() => setTeam(null));
     }, [id]);
 
     useEffect(() => {
@@ -327,6 +331,17 @@ export default function PostDetailPage() {
                                     삭제
                                 </button>
                             </>
+                        )}
+                        {team && (
+                            <button
+                                onClick={() => router.push(`/teams/${team.id}`)}
+                                className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                </svg>
+                                팀 채팅방
+                            </button>
                         )}
                     </div>
                     {isLoggedIn && !isAuthor && post.status === "OPEN" && (
