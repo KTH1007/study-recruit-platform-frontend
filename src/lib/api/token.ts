@@ -12,3 +12,14 @@ export function setAccessToken(token: string): void {
 export function removeAccessToken(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
 }
+
+export function getCurrentUserId(): string | null {
+    const token = getAccessToken();
+    if (!token) return null;
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+        return payload.userId ?? null;
+    } catch {
+        return null;
+    }
+}
